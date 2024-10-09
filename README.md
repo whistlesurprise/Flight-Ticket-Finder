@@ -1,0 +1,3 @@
+FLIGHT TICKET FINDER 
+
+Developed a Python program that retrieves complex JSON-structured data from the Amadeus Flight-Offers Search API. After obtaining the data, I cleaned and preprocessed it to meet specific requirements. The final output consists of a CSV file and a PNG file. The CSV file presents the cheapest itineraries, including details such as departure and arrival destinations, flight duration, price, and additional services (e.g., checked baggage). The PNG file visualizes the relationship between flight ticket prices and flight numbers.Through this project, I enhanced my data analysis skills and gained practical experience in API usage while effectively managing a large and complex dataset.
