@@ -68,8 +68,13 @@ class FlightDataProcessor:
         normalized_df = pd.concat(normalized_cols, axis=1)
     
     # Add the additional columns from the original DataFrame (df)
-        normalized_df['additionalServices'] = df['price.additionalServices']
-        normalized_df['includedCheckedBagsOnly'] = df['pricingOptions.includedCheckedBagsOnly']
+        
+        try:
+            normalized_df['additionalServices'] = df['price.additionalServices']
+            normalized_df['includedCheckedBagsOnly'] = df['pricingOptions.includedCheckedBagsOnly']
+        except KeyError as e: 
+            print(f'There is no additional service existing')
+        
         normalized_df['grandTotal'] = df['price.grandTotal']
         normalized_df['currency'] = df['price.currency']
         normalized_df['lastTicketingDate'] = df['lastTicketingDate']
@@ -78,27 +83,37 @@ class FlightDataProcessor:
         return normalized_df
     
     def process_additional_services(self, df):
-    # Replace single quotes with double quotes for JSON parsing
-        df['additionalServices'] = df['additionalServices'].apply(
-        lambda x: x.replace("'", '"') if isinstance(x, str) else x
-    )
-    
-    # Convert JSON strings to dictionaries
-        df['additionalServices'] = df['additionalServices'].apply(
-        lambda x: json.loads(x) if isinstance(x, str) else x
-    )
-    
-    # Explode the column to expand lists into rows
-        df = df.explode('additionalServices')
-    
-    # Use json_normalize directly on 'additionalServices' to flatten the dictionary
-        additional_services_df = pd.json_normalize(df['additionalServices'])
-    
-    # Combine the flattened data with the original DataFrame, dropping the original column
-        df = pd.concat([df.reset_index(drop=True), additional_services_df.reset_index(drop=True)], axis=1)
-    
-        return df.drop(columns=['additionalServices'], axis=1)
-    
+        try:
+        # Check if 'additionalServices' key exists in the DataFrame
+            if 'additionalServices' in df.columns:
+            # Replace single quotes with double quotes for JSON parsing
+                df['additionalServices'] = df['additionalServices'].apply(
+                lambda x: x.replace("'", '"') if isinstance(x, str) else x
+            )
+
+            # Convert JSON strings to dictionaries
+                df['additionalServices'] = df['additionalServices'].apply(
+                lambda x: json.loads(x) if isinstance(x, str) else x
+            )
+
+            # Explode the column to expand lists into rows
+                df = df.explode('additionalServices')
+
+            # Use json_normalize directly on 'additionalServices' to flatten the dictionary
+                additional_services_df = pd.json_normalize(df['additionalServices'])
+
+            # Combine the flattened data with the original DataFrame, dropping the original column
+                df = pd.concat([df.reset_index(drop=True), additional_services_df.reset_index(drop=True)], axis=1)
+
+                return df.drop(columns=['additionalServices'], axis=1)
+            else:
+                print("'additionalServices' key does not exist in the DataFrame.")
+                return df  # Return the original DataFrame if the key does not exist
+
+        except KeyError as e:
+            print(f"Key error occurred: {e}")
+
+ 
     def create_itineraries_directory_and_save_csv(df, directory='itineraries', file_name='flights_data.csv'):
             
             if not os.path.exists(directory):
