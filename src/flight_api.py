@@ -34,8 +34,11 @@ class FlightFinder:
                 adults=self.adults
             )
             # Save the data if successful
-            self.data = response.data
-            print("Data fetched successfully!")
+            if response.data:
+                self.data = response.data
+                return True
+            else: 
+                return False
         
         except ResponseError as error:
             # Log the error details

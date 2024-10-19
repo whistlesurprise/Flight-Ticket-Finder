@@ -1,19 +1,15 @@
-# Import classes from api.py and processor.py
-from flight_api import FlightFinder
-from processor import FlightDataProcessor
-
 def main ():
     # Create an instance of FlightFinder with the desired flight search parameters
     finder = FlightFinder(
     originLocationCode='AYT', 
-    destinationLocationCode='WAW', 
-    departureDate='2024-11-09', 
+    destinationLocationCode='ADH', 
+    departureDate='2024-12-01', 
     adults=1
 )
-# Check if the flight query was successful; exit the program if no flights are found 
-    if not finder.query_flight():
-        print("No flights found. Exiting program!")
-        exit(1)
+
+# Query the flight data
+    finder.query_flight()
+
 # Pass the fetched flight data to the FlightDataProcessor
     processor = FlightDataProcessor(finder.data)
 
@@ -40,6 +36,3 @@ def main ():
 
 if __name__ == '__main__':
     main()
-
-
-

@@ -14,12 +14,12 @@ class FlightDataProcessor:
         self.data = data
     
     def normalize_data(self):
-        if self.data:
-            return pd.json_normalize(self.data)
-        
-        else:
-            raise ValueError("No data to normalize")
-    
+        try:
+            if self.data:
+                return pd.json_normalize(self.data)
+        except ValueError as e:
+            print("There are no flights to desired destination")
+
     def to_csv(self,filepath,df):
         return df.to_csv(filepath)
     
@@ -73,7 +73,7 @@ class FlightDataProcessor:
             normalized_df['additionalServices'] = df['price.additionalServices']
             normalized_df['includedCheckedBagsOnly'] = df['pricingOptions.includedCheckedBagsOnly']
         except KeyError as e: 
-            print(f'There is no additional service existing')
+            print(f'There is no additional service  existing')
         
         normalized_df['grandTotal'] = df['price.grandTotal']
         normalized_df['currency'] = df['price.currency']
